@@ -42,17 +42,21 @@ RUN make -j$(nproc) install
 WORKDIR ${BUILD_DIR}
 RUN git clone --branch r${MONGO_VERSION} https://github.com/mongodb/mongo
 WORKDIR ${BUILD_DIR}/mongo
-RUN git clone --branch r${MONGO_VERSION} https://github.com/mongodb-partners/mongo-rocks src/mongo/db/modules/rocksdb
+RUN git clone --branch r${MONGO_VERSION} https://github.com/mongodb-partners/mongo-rocks src/mongo/db/modules/rocks
 RUN git clone --branch r${MONGO_VERSION} https://github.com/mongodb/mongo-tools.git src/mongo-tools-repo
 WORKDIR src/mongo-tools-repo/
 RUN ./build.sh &&  mv bin/ ../mongo-tools/
 
 WORKDIR ${BUILD_DIR}/mongo
 RUN scons \
+      CPPPATH=/usr/local/include
+      LIBPATH=/usr/local/lib
       -j$(nproc) \
       --release \
       --use-new-tools \
       dist
+
+RUN mkdir -p /artifacts && mv mongodb-linux-x86_64* /artifacts
 
 #WORKDIR ${BUILD_DIR}/mongo/buildscripts
 #RUN python packager.py --tarball=${BUILD_DIR}/mongo/${MONGO_ARCH}${MONGO_VERSION}.tgz -d ubuntu1404 -s ${MONGO_VERSION} -m ${GIT_BRANCH} || true
