@@ -36,8 +36,8 @@ ENV MONGO_ARCH mongodb-linux-x86_64-
 
 RUN git clone --branch ${ROCKSDB_VERSION} https://github.com/facebook/rocksdb
 WORKDIR rocksdb
-RUN make -j32 release
-RUN make -j32 install
+RUN make -j$(nproc) release
+RUN make -j$(nproc) install
 
 WORKDIR ${BUILD_DIR}
 RUN git clone --branch r${MONGO_VERSION} https://github.com/mongodb/mongo
@@ -49,7 +49,7 @@ RUN ./build.sh &&  mv bin/ ../mongo-tools/
 
 WORKDIR ${BUILD_DIR}/mongo
 RUN scons \
-      -j32 \
+      -j$(nproc) \
       --release \
       --use-new-tools \
       dist
