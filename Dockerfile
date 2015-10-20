@@ -34,7 +34,7 @@ ENV ROCKSDB_VERSION 4.1.fb
 ENV MONGO_VERSION 3.2.0-rc0
 ENV MONGO_ARCH mongodb-linux-x86_64-
 
-RUN git clone --branch ${ROCKSDB_VERSION} git@github.com:facebook/rocksdb.git
+RUN git clone --branch ${ROCKSDB_VERSION} https://github.com/facebook/rocksdb
 WORKDIR rocksdb
 RUN make -j32 release
 RUN make -j32 install
