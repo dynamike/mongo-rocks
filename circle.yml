@@ -10,4 +10,4 @@ dependencies:
     - if [[ -e ~/docker/image.tar ]]; then docker load --input ~/docker/image.tar; fi:
         timeout: 1200
     - docker build -t dynamike/mongo-rocks .
-    - mkdir -p ~/docker; docker save dynamike/mongo > ~/docker/debimage.tar
+    - mkdir -p ~/docker; docker save dynamike/mongo > ~/docker/image.tar
