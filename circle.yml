@@ -20,10 +20,11 @@ test:
     - docker run -i dynamike/mongo-rocks python buildscripts/smoke.py --smoke-db-prefix=/tmp/mongo-rocksdb-test --nopreallocj --with-cleanbb --shell-write-mode commands concurrency --storageEngine=rocksdb
     - docker run -i dynamike/mongo-rocks python buildscripts/smoke.py --smoke-db-prefix=/tmp/mongo-rocksdb-test --nopreallocj --with-cleanbb --shell-write-mode commands concurrency --storageEngine=rocksdb
     - docker run -i dynamike/mongo-rocks python buildscripts/smoke.py --smoke-db-prefix=/tmp/mongo-rocksdb-test --nopreallocj --with-cleanbb --shell-write-mode commands --small-oplog-rs jsCore --storageEngine=rocksdb
-
 deployment:
-  commands:
-    - docker run -i -d dynamike/mongo-rocks; sleep 10
-    - sudo docker cp $(docker ps | grep mongo-rocks | cut -d" " -f1):/artifacts /
-    - sudo chown -R ubuntu:ubuntu /artifacts
-    - aws s3 cp /artifacts/* s3://parse-mongodb-builds/
+ master:
+    branch: master
+    commands:
+      - docker run -i -d dynamike/mongo-rocks; sleep 10
+      - sudo docker cp $(docker ps | grep mongo-rocks | cut -d" " -f1):/artifacts /
+      - sudo chown -R ubuntu:ubuntu /artifacts
+      - aws s3 cp /artifacts/* s3://parse-mongodb-builds/
