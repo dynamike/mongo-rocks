@@ -10,7 +10,20 @@ dependencies:
         timeout: 1200
     - docker build -t dynamike/mongo-rocks .
     - mkdir -p ~/docker; docker save dynamike/mongo-rocks > ~/docker/image.tar
+test:
+  override::
+    - docker run -i dynamike/mongo-rocks ./build/unittests/storage_rocks_index_test
+    - docker run -i dynamike/mongo-rocks ./build/unittests/storage_rocks_engine_test
+    - docker run -i dynamike/mongo-rocks ./build/unittests/storage_rocks_record_store_test
+    - docker run -i dynamike/mongo-rocks python buildscripts/smoke.py --smoke-db-prefix=/tmp/mongo-rocksdb-test --nopreallocj --with-cleanbb --shell-write-mode commands jsCore --storageEngine=rocksdb
+    - docker run -i dynamike/mongo-rocks python buildscripts/smoke.py --smoke-db-prefix=/tmp/mongo-rocksdb-test --nopreallocj --with-cleanbb --shell-write-mode commands parallel --storageEngine=rocksdb
+    - docker run -i dynamike/mongo-rocks python buildscripts/smoke.py --smoke-db-prefix=/tmp/mongo-rocksdb-test --nopreallocj --with-cleanbb --shell-write-mode commands concurrency --storageEngine=rocksdb
+    - docker run -i dynamike/mongo-rocks python buildscripts/smoke.py --smoke-db-prefix=/tmp/mongo-rocksdb-test --nopreallocj --with-cleanbb --shell-write-mode commands concurrency --storageEngine=rocksdb
+    - docker run -i dynamike/mongo-rocks python buildscripts/smoke.py --smoke-db-prefix=/tmp/mongo-rocksdb-test --nopreallocj --with-cleanbb --shell-write-mode commands --small-oplog-rs jsCore --storageEngine=rocksdb
+
+deployment:
+  commands:
     - docker run -i -d dynamike/mongo-rocks; sleep 10
-    - sudo docker cp $(docker ps | grep mongo | cut -d" " -f1):/artifacts /
+    - sudo docker cp $(docker ps | grep mongo-rocks | cut -d" " -f1):/artifacts /
     - sudo chown -R ubuntu:ubuntu /artifacts
     - aws s3 cp /artifacts/* s3://parse-mongodb-builds/
