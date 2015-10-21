@@ -20,17 +20,28 @@ RUN apt-get update && \
       scons \
       zlib1g-dev
 
+ENV GOROOT /goroot
+ENV GOPATH /gopath
+ENV PATH $GOROOT/bin:$GOPATH/bin:$PATH
+ENV BUILD_DIR /mongobuild
+ENV GO_VERSION 1.5.1
+ENV JEMALLOC_VERSION 4.0.3
+ENV ROCKSDB_VERSION 4.1.fb
+ENV MONGO_VERSION 3.2.0-rc0
+ENV MONGO_ARCH mongodb-linux-x86_64-
+
 # Install Go
 RUN \
   mkdir -p /goroot && \
-  curl https://storage.googleapis.com/golang/go1.4.2.linux-amd64.tar.gz | tar xvzf - -C /goroot --strip-components=1
+  curl https://storage.googleapis.com/golang/go${GO_VERSION}.linux-amd64.tar.gz | tar xvzf - -C /goroot --strip-components=1
 
 # Install jemalloc
 RUN \
-  curl -L https://github.com/jemalloc/jemalloc/releases/download/4.0.3/jemalloc-4.0.3.tar.bz2 | tar xjf - -C /jemalloc/ && \
-  cd jemalloc-4.0.3 && \
+  mkdir /jemalloc && \
+  curl -L https://github.com/jemalloc/jemalloc/releases/download/${JEMALLOC_VERSION}/jemalloc-${JEMALLOC_VERSION}.tar.bz2 | tar xjf - -C /jemalloc/ && \
+  cd /jemalloc/jemalloc-${JEMALLOC_VERSION} && \
   ./configure && \
-  make -j$(nproc)
+  make -j$(nproc) && \
   make install
 
 ENV GOROOT /goroot
