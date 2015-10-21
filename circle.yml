@@ -9,8 +9,8 @@ dependencies:
     - if [[ -e ~/docker/image.tar ]]; then docker load --input ~/docker/image.tar; fi:
         timeout: 1200
     - docker build -t dynamike/mongo-rocks .
-    - mkdir -p ~/docker; docker save dynamike/mongo > ~/docker/image.tar
+    - mkdir -p ~/docker; docker save dynamike/mongo-rocks > ~/docker/image.tar
     - docker run -i -d dynameike/mongo-rocks; sleep 10
-    - sudo mkdir -p !artifactss
-    - sudo docker cp $(docker ps | grep mongo | cut -d" " -f1):/artifacts ~/artifacts
-    - aws s3 cp ~/artifacts/* s3://parse-mongodb-builds/
+    - sudo mkdir -p !s3_artifacts
+    - sudo docker cp $(docker ps | grep mongo | cut -d" " -f1):/artifacts ~/s3_artifacts
+    - aws s3 cp ~/s3_artifacts/* s3://parse-mongodb-builds/

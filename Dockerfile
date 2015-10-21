@@ -54,6 +54,7 @@ LIBPATH=/usr/local/lib \
 -j$(nproc) \
 --release \
 --use-new-tools \
+--nostrip \
 dist
 
 RUN mkdir -p /artifacts && mv mongodb-linux-x86_64* /artifacts
