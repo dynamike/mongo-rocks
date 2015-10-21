@@ -10,6 +10,7 @@ dependencies:
         timeout: 1200
     - docker build -t dynamike/mongo-rocks .
     - mkdir -p ~/docker; docker save dynamike/mongo-rocks > ~/docker/image.tar
+        timeout: 1200
 test:
   override:
     - docker run -i dynamike/mongo-rocks ./build/unittests/storage_rocks_index_test
