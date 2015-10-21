@@ -17,6 +17,7 @@ RUN apt-get update && \
       libsnappy-dev \
       make \
       python-httplib2 \
+      python-pymongo \
       scons \
       zlib1g-dev
 
@@ -33,7 +34,7 @@ ENV MONGO_ARCH mongodb-linux-x86_64-
 # Install Go
 RUN \
   mkdir -p /goroot && \
-  curl https://storage.googleapis.com/golang/go${GO_VERSION}.linux-amd64.tar.gz | tar xvzf - -C /goroot --strip-components=1
+  curl https://storage.googleapis.com/golang/go${GO_VERSION}.linux-amd64.tar.gz | tar xzf - -C /goroot --strip-components=1
 
 # Install jemalloc
 RUN \
@@ -58,6 +59,24 @@ WORKDIR src/mongo-tools-repo/
 RUN ./build.sh &&  mv bin/ ../mongo-tools/
 
 WORKDIR ${BUILD_DIR}/mongo
+
+#build enviornment to run tests
+RUN scons \
+LINKFLAGS="-Wl,--whole-archive /usr/local/lib/libjemalloc.a -Wl,--no-whole-archive" \
+CPPPATH=/usr/local/include \
+LIBPATH=/usr/local/lib \
+-j$(nproc) \
+--release \
+--use-new-tools \
+--nostrip \
+--allocator=system \
+build/unittests/storage_rocks_index_test \
+build/unittests/storage_rocks_engine_test \
+build/unittests/storage_rocks_record_store_test \
+mongo \
+mongod
+
+#build tarball
 RUN scons \
 LINKFLAGS="-Wl,--whole-archive /usr/local/lib/libjemalloc.a -Wl,--no-whole-archive" \
 CPPPATH=/usr/local/include \
