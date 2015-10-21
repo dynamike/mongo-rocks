@@ -44,15 +44,6 @@ RUN \
   make -j$(nproc) && \
   make install
 
-ENV GOROOT /goroot
-ENV GOPATH /gopath
-ENV PATH $GOROOT/bin:$GOPATH/bin:$PATH
-ENV BUILD_DIR /mongobuild
-ENV GIT_BRANCH master
-ENV ROCKSDB_VERSION 4.1.fb
-ENV MONGO_VERSION 3.2.0-rc0
-ENV MONGO_ARCH mongodb-linux-x86_64-
-
 RUN git clone --branch ${ROCKSDB_VERSION} https://github.com/facebook/rocksdb
 WORKDIR rocksdb
 RUN make -j$(nproc) release
