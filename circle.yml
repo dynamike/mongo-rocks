@@ -11,7 +11,7 @@ dependencies:
     - docker build -t dynamike/mongo-rocks .
     - mkdir -p ~/docker; docker save dynamike/mongo-rocks > ~/docker/image.tar
 test:
-  override::
+  override:
     - docker run -i dynamike/mongo-rocks ./build/unittests/storage_rocks_index_test
     - docker run -i dynamike/mongo-rocks ./build/unittests/storage_rocks_engine_test
     - docker run -i dynamike/mongo-rocks ./build/unittests/storage_rocks_record_store_test
